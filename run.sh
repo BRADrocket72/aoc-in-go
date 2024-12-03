@@ -35,6 +35,8 @@ func run(part2 bool, input string) any {
 EOF
 }
 
+export AOC_SESSION=53616c7465645f5f3b6d84e9d658886de6a2b289b582a728c37fa58328e0fcf805c82227e86e0e6112f0107b2dd86f4f044fd8bca267f6d0ad6148db645e81fc
+
 # two args YEAR and DAY
 YEAR="${1:-}"
 DAY="${2:-}"

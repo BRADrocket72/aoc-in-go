@@ -1,7 +1,6 @@
 module aoc-in-go
 
-go 1.21.3
-
+go 1.23
 require github.com/jpillora/puzzler v1.3.3
 
 require (
@@ -16,3 +15,4 @@ require (
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 )
+
