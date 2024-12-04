@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"slices"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -22,59 +22,66 @@ func main() {
 func run(part2 bool, input string) any {
 	// when you're ready to do part 2, remove this "not implemented" block
 	if part2 {
-		return "not implemented"
-	}
-	return findAllIndexes(input)
-}
+		ret := 0
+		pattern := regexp.MustCompile(`mul\([0-9]+,[0-9]+\)`)
+		dos := regexp.MustCompile(`do()`) // Match one or more digits
 
-func findAllIndexes(input string) int {
-	startIndexes := make([]int, 0)
-	endIndexes := make([]int, 0)
+		donts := regexp.MustCompile(`don't()`)
 
-	for point := 0; point < len(input); point++ {
-		secondSlice := input[point:]
-		startIndex := strings.Index(secondSlice, "mul(")
-		endIndex := strings.Index(secondSlice, ")")
-		if startIndex > -1 {
-			if !slices.Contains(startIndexes, startIndex+point) && startIndex+point > 0 {
-				startIndexes = append(startIndexes, startIndex+point)
-			}
-		}
-		if endIndex > -1 {
-			if !slices.Contains(endIndexes, endIndex+point) && endIndex+point > 0 {
-				endIndexes = append(endIndexes, endIndex+point)
-			}
-		}
+		matches := pattern.FindAllString(input, -1) // -1 means find all matches
+		bytes := []byte(input)
+		matchesIndexes := pattern.FindAllIndex(bytes, -1) // -1 means find all matches
+		dosIndexes := dos.FindAllIndex(bytes, -1)         // -1 means find all matches
+		dontsIndexes := donts.FindAllIndex(bytes, -1)     // -1 means find all matches
 
-	}
-	currentEndIndexIndex := 0
-	ret := 0
-	for i := 0; i < len(startIndexes); i++ {
-		startIndex := startIndexes[i]
-		endIndex := endIndexes[currentEndIndexIndex]
-		if startIndex > endIndex {
-			value, changed := findFirstMatch(endIndexes, startIndex)
-			if changed {
-				currentEndIndexIndex = value
-			}
-		}
-		if currentEndIndexIndex+1 < len(endIndexes) && startIndex < endIndex {
-			testString := input[startIndex : endIndexes[currentEndIndexIndex]+1]
-			if testString[0:4] == "mul(" && testString[len(testString)-1] == ')' {
-				numbersString := testString[4 : len(testString)-1]
-				splitNumbString := strings.Split(numbersString, ",")
-				a, a_err := strconv.Atoi(splitNumbString[0])
-				b, b_err := strconv.Atoi(splitNumbString[1])
-				if a_err == nil && b_err == nil {
-					fmt.Print(a, "times", b)
-					ret = ret + (a * b)
-					currentEndIndexIndex++
+		fmt.Print(dosIndexes)
+		var isDo = true
+		for indexOfMatch, match := range matches {
+			currentPointIndex := matchesIndexes[indexOfMatch][0]
+			lastDo := 0
+			lastDont := 1000000000000
+			for _, doIndex := range dosIndexes {
+				if doIndex[1] < currentPointIndex {
+					lastDo = doIndex[0]
 				}
 			}
+			for _, dontIndex := range dontsIndexes {
+				if dontIndex[1] < currentPointIndex {
+					lastDont = dontIndex[0]
+				}
+			}
+			if lastDo > lastDont || lastDont == 1000000000000 {
+				isDo = true
+			} else {
+				isDo = false
+			}
+			numStrings := match[4 : len(match)-1]
+			splitStrings := strings.Split(numStrings, ",")
+			a, a_err := strconv.Atoi(splitStrings[0])
+			b, b_err := strconv.Atoi(splitStrings[1])
+			if a_err == nil && b_err == nil && isDo {
+				ret = ret + (a * b)
+			}
+
 		}
+		return ret
+	}
+	ret := 0
+	pattern := regexp.MustCompile(`mul\([0-9]+,[0-9]+\)`) // Match one or more digits
+
+	matches := pattern.FindAllString(input, -1) // -1 means find all matches
+
+	for _, match := range matches {
+		numStrings := match[4 : len(match)-1]
+		splitStrings := strings.Split(numStrings, ",")
+		a, a_err := strconv.Atoi(splitStrings[0])
+		b, b_err := strconv.Atoi(splitStrings[1])
+		if a_err == nil && b_err == nil {
+			ret = ret + (a * b)
+		}
+
 	}
 	return ret
-
 }
 
 func findFirstMatch(arr []int, target int) (int, bool) {
