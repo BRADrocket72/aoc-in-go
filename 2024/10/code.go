@@ -54,14 +54,14 @@ func run(part2 bool, input string) any {
 
 		for len(points_to_traverse) > 0 {
 			current_coords := points_to_traverse[0]
-
 			currentPoint := grid[points_to_traverse[0]]
-			if current_coords.X > 1 {
+			if currentPoint == 9 {
+				peaks = append(peaks, current_coords)
+			}
+			if current_coords.X > 0 {
 				test_coords := image.Point{current_coords.X - 1, current_coords.Y}
 				test_point := grid[test_coords]
-				if test_point == 0 {
-					peaks = append(peaks, test_coords)
-				}
+
 				if currentPoint-test_point == 1 || currentPoint-test_point == -1 {
 					is_found := false
 					for _, travelled_Point := range accessed_points {
@@ -81,9 +81,7 @@ func run(part2 bool, input string) any {
 				if current_coords.X < x_max {
 					test_coords := image.Point{current_coords.X + 1, current_coords.Y}
 					test_point := grid[test_coords]
-					if test_point == 0 {
-						peaks = append(peaks, test_coords)
-					}
+
 					if currentPoint-test_point == 1 || currentPoint-test_point == -1 {
 						is_found := false
 						for _, travelled_Point := range accessed_points {
@@ -102,12 +100,9 @@ func run(part2 bool, input string) any {
 					}
 				}
 
-				if current_coords.Y > 1 {
+				if current_coords.Y > 0 {
 					test_coords := image.Point{current_coords.X, current_coords.Y - 1}
 					test_point := grid[test_coords]
-					if test_point == 0 {
-						peaks = append(peaks, test_coords)
-					}
 					if currentPoint-test_point == 1 || currentPoint-test_point == -1 {
 						is_found := false
 						for _, travelled_Point := range accessed_points {
@@ -129,9 +124,6 @@ func run(part2 bool, input string) any {
 				if current_coords.Y < y_max {
 					test_coords := image.Point{current_coords.X, current_coords.Y + 1}
 					test_point := grid[test_coords]
-					if test_point == 0 {
-						peaks = append(peaks, test_coords)
-					}
 					if currentPoint-test_point == 1 || currentPoint-test_point == -1 {
 						is_found := false
 						for _, travelled_Point := range accessed_points {
@@ -150,14 +142,13 @@ func run(part2 bool, input string) any {
 					}
 				}
 			}
-			fmt.Printf("%d\n", len(points_to_traverse))
-			fmt.Print(len("\n\n"))
-
-			points_to_traverse = points_to_traverse[1:]
 
 			accessed_points = append(accessed_points, current_coords)
+			points_to_traverse = points_to_traverse[1:]
 
 		}
+		fmt.Print(trail_head)
+		fmt.Print(peaks)
 
 		ret = ret + len(peaks)
 	}
