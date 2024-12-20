@@ -28,7 +28,76 @@ type bot struct {
 func run(part2 bool, input string) any {
 	// when you're ready to do part 2, remove this "not implemented" block
 	if part2 {
-		return "not implemented"
+		bots := make([]bot, 0)
+		// solve part 1 here
+		lines := strings.Split(input, "\n")
+		for _, line := range lines {
+			splitLine := strings.Split(line, " v=")
+			position_string := strings.Split(splitLine[0], "p=")[1]
+			x_and_y := strings.Split(position_string, ",")
+			x, x_err := strconv.Atoi(x_and_y[0])
+			y, y_err := strconv.Atoi(x_and_y[1])
+			if x_err != nil || y_err != nil {
+				fmt.Print(x_err)
+				fmt.Print(y_err)
+
+			}
+
+			velocity_string := strings.Split(line, "v=")[1]
+			v_xand_v_y := strings.Split(velocity_string, ",")
+			v_x, _ := strconv.Atoi(v_xand_v_y[0])
+			v_y, _ := strconv.Atoi(v_xand_v_y[1])
+
+			bot := bot{
+				position: image.Point{X: x, Y: y},
+				velocity: image.Point{X: v_x, Y: v_y},
+			}
+			bots = append(bots, bot)
+		}
+		is_test := false
+		if bots[0].position.X == 0 {
+			is_test = true
+		}
+
+		x_max_inx := 100
+		y_max_inx := 102
+		if is_test {
+			x_max_inx = 10
+			y_max_inx = 6
+		}
+		seconds := 0
+		for i := range 500000000000 {
+			for i, bot := range bots {
+				bot = moveBot(bot, x_max_inx, y_max_inx)
+				bots[i] = bot
+			}
+			is_triangle_started := false
+			levels := 1
+
+			for _, bot1 := range bots {
+				rigt := false
+				left := false
+				for _, bot2 := range bots {
+					if bot2.position.X == bot1.position.X+levels && bot2.position.Y == bot1.position.Y+levels {
+						rigt = true
+					}
+					if bot2.position.X == bot1.position.X-levels && bot2.position.Y == bot1.position.Y-levels {
+						left = true
+					}
+				}
+				if rigt && left {
+					levels++
+				}
+
+			}
+			if levels == 20 {
+				seconds = i
+			}
+			if is_triangle_started {
+				fmt.Print(i)
+			}
+		}
+		return seconds
 	}
 
 	bots := make([]bot, 0)
@@ -38,13 +107,8 @@ func run(part2 bool, input string) any {
 		splitLine := strings.Split(line, " v=")
 		position_string := strings.Split(splitLine[0], "p=")[1]
 		x_and_y := strings.Split(position_string, ",")
-		x, x_err := strconv.Atoi(x_and_y[0])
-		y, y_err := strconv.Atoi(x_and_y[1])
-		if x_err != nil || y_err != nil {
-			fmt.Print(x_err)
-			fmt.Print(y_err)
-
-		}
+		x, _ := strconv.Atoi(x_and_y[0])
+		y, _ := strconv.Atoi(x_and_y[1])
 
 		velocity_string := strings.Split(line, "v=")[1]
 		v_xand_v_y := strings.Split(velocity_string, ",")
@@ -68,24 +132,33 @@ func run(part2 bool, input string) any {
 		x_max_inx = 10
 		y_max_inx = 6
 	}
-
-	for i, bot := range bots {
-		bot = moveBot(bot, x_max_inx, y_max_inx, 100, i == 2)
-		bots[i] = bot
+	for i := range 500 {
+		for i, bot := range bots {
+			bot = moveBot(bot, x_max_inx, y_max_inx)
+			bots[i] = bot
+		}
+		unique_points := make(map[image.Point]bool)
+		are_all_unique := true
+		for _, bot := range bots {
+			if unique_points[bot.position] {
+				are_all_unique = false
+			} else {
+				unique_points[bot.position] = true
+			}
+		}
+		if are_all_unique {
+			fmt.Print(i)
+		}
 	}
 	ret := judgeQuandrant(bots, x_max_inx, y_max_inx)
 	return ret
 
 }
 
-func moveBot(bot bot, x_max int, y_max int, loop int, print bool) (ret_bot bot) {
-	for range loop {
-		bot.position.X = moveX(bot, x_max)
-		bot.position.Y = moveY(bot, y_max)
-		if print {
-			// fmt.Print(bot.position)
-		}
-	}
+func moveBot(bot bot, x_max int, y_max int) (ret_bot bot) {
+	bot.position.X = moveX(bot, x_max)
+	bot.position.Y = moveY(bot, y_max)
+
 	return bot
 
 }
@@ -134,15 +207,7 @@ func judgeQuandrant(bots []bot, x_max int, y_max int) int {
 		if bot.position.X > mid_x && bot.position.Y > mid_y {
 			q4++
 		}
-		fmt.Print(bot.position)
 	}
-
-	fmt.Print(q1)
-	fmt.Print(q2)
-
-	fmt.Print(q3)
-	fmt.Print(q4)
-
 	return q1 * q2 * q3 * q4
 
 }
