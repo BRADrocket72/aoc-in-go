@@ -1,6 +1,9 @@
 package main
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/jpillora/puzzler/harness/aoc"
 )
 
@@ -20,5 +23,26 @@ func run(part2 bool, input string) any {
 		return "not implemented"
 	}
 	// solve part 1 here
-	return 42
+	init_value := 50
+	result_value := init_value
+	for _, s := range strings.Split(strings.TrimSpace(string(input)), "\n") {
+		result_value += parseLine(s)
+		if result_value > 50 {
+			result_value = result_value - 50
+		}
+		if result_value < 0 {
+			result_value = 50 + result_value
+		}
+		println(result_value)
+	}
+	return result_value
+}
+
+func parseLine(line string) int {
+	r_int, _ := strconv.Atoi(s[1:])
+	if s[0] == 'L' {
+		return 0 - r_int
+	} else {
+		return r_int
+	}
 }

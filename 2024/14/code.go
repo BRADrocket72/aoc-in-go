@@ -2,11 +2,9 @@ package main
 
 import (
 	"fmt"
-	"image"
+	"github.com/jpillora/puzzler/harness/aoc"
 	"strconv"
 	"strings"
-
-	"github.com/jpillora/puzzler/harness/aoc"
 )
 
 func main() {
