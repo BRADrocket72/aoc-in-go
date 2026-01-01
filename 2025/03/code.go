@@ -23,8 +23,8 @@ func run(part2 bool, input string) any {
 		totalJoltage := 0
 		for _, s := range strings.Split(strings.TrimSpace(string(input)), "\n") {
 			numbers := parseLineToNumberSplice(s)
-			highestInLine := getHighest12CombinedNumberInArray(numbers, 11)
-			totalJoltage += highestInLine
+			_, firstHighestIndex := getHighestNumberToTheLeftOf12(numbers)
+			findNextLargestDigits(numbers, firstHighestIndex)
 		}
 		return totalJoltage
 	}
@@ -36,6 +36,46 @@ func run(part2 bool, input string) any {
 		totalJoltage += highestInLine
 	}
 	return totalJoltage
+}
+
+func getHighestNumberToTheLeftOf12(numbers []int) (numberint, numberIndex int) {
+	numberUpTo11thSpot := numbers[0 : len(numbers)-11]
+	largestNumber := 0
+	largestNumberIndex := 0
+	for numberIndex, number := range numberUpTo11thSpot {
+		if number > largestNumber {
+			largestNumber = number
+			largestNumberIndex = numberIndex
+		}
+	}
+	return largestNumber, largestNumberIndex
+}
+
+func findNextLargestDigits(numbers []int, firstNumberIndex int) []int {
+	avaibleNumbers := numbers[firstNumberIndex:]
+	digitsStillNeeded := 12
+	startingIndex := firstNumberIndex
+	largestNumberInWindow := 0
+	largestNumberInWindowIndex := 0
+	combinedDigits := make([]int, 0)
+	combinedDigits = append(combinedDigits, numbers[startingIndex])
+	avaibleNumbers = numbers[startingIndex+1:]
+	for digitsStillNeeded > 1 {
+		availbleWindow := avaibleNumbers[:len(avaibleNumbers)]
+		largestNumberInWindow = 0
+		largestNumberInWindow = 0
+		for i, number := range availbleWindow {
+			if number > largestNumberInWindow {
+				largestNumberInWindow = number
+				largestNumberInWindowIndex = i
+			}
+		}
+		startingIndex = startingIndex + largestNumberInWindowIndex
+		combinedDigits = append(combinedDigits, availbleWindow[largestNumberInWindowIndex])
+		avaibleNumbers = numbers[startingIndex+1:]
+		digitsStillNeeded--
+	}
+	return combinedDigits
 }
 
 func parseLineToNumberSplice(line string) []int {
