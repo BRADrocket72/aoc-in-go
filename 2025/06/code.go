@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -65,10 +63,30 @@ func run(part2 bool, input string) any {
 	//9434894930166 too low
 	//9434900007303 too low
 	// solve part 1 here
+	// solve part 1 here
 	colsTotal := 0
 	re := regexp.MustCompile("\\s*")
 	colCount := len(re.Split(strings.Split(input, "\n")[0], -1))
 	cols := make([][]int, colCount)
+
+	for _, line := range strings.Split(input, "\n") {
+		numbers := strings.Fields(line)
+		for i, number := range numbers {
+			intVal, err := strconv.Atoi(number)
+			if err == nil {
+				cols[i] = append(cols[i], intVal)
+			}
+			if err != nil {
+				if number == "*" {
+					colsTotal = colsTotal + multiplySlice(cols[i])
+				} else if number == "+" {
+					colsTotal = colsTotal + sumSlice(cols[i])
+				}
+			}
+		}
+	}
+	return colsTotal
+}
 
 func calculateFunction(cols [][]int, startIndex int, stopIndex int, sign string) int {
 	columnsToUse := cols[startIndex : stopIndex-1]
@@ -100,7 +118,7 @@ func calculateFunction(cols [][]int, startIndex int, stopIndex int, sign string)
 		}
 		return total
 	}
-	return colsTotal
+	return 0
 }
 
 func sumSlice(numbers []int) int {
@@ -112,34 +130,6 @@ func sumSlice(numbers []int) int {
 }
 
 func multiplySlice(numbers []int) int {
-	total := 1
-	for _, number := range numbers {
-		total = total * number
-	}
-	return total
-}
-
-func sumSlicePt2(numbers []int) int {
-	sum := 0
-	maxDigit := math.Pow10(len(numbers) - 1)
-	addedVal := make([]int, 0)
-	//312
-	for colInd, number := range numbers {
-		place := maxDigit / math.Pow10(colInd)
-		//does not handle single digits well=rconv.Itoa(number)
-		numSplitToDigits := strings.Split(str, "")
-		for _, numSplit := range numSplitToDigits {
-			var digit, _ = strconv.Atoi(numSplit)
-			placeInt := int(place)
-			sum += placeInt * digit
-			addedVal = append(addedVal, (placeInt * digit))
-		}
-		fmt.Println(addedVal)
-	}
-	return sum
-}
-
-func multiplySlicePt2(numbers []int) int {
 	total := 1
 	for _, number := range numbers {
 		total = total * number
