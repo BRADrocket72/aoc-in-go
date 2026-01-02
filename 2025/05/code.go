@@ -30,7 +30,7 @@ func run(part2 bool, input string) any {
 		mergedRanges := mergeRanges(rangeList)
 		totalValue := 0
 		for _, mergedRange := range mergedRanges {
-			totalValue = totalValue + mergedRange.Max - mergedRange.Min
+			totalValue = totalValue + mergedRange.Max - mergedRange.Min + 1
 		}
 		return totalValue
 		//399163709260641 too high
@@ -59,26 +59,51 @@ func mergeRanges(ranges []RangeObject) []RangeObject {
 			isAdded := false
 			for newRangeIndex, newRangeObject := range newRangeObjects {
 				aMaxIsGreater := rangeObject.Max >= newRangeObject.Max
-				aMinIsGreater := rangeObject.Min >= newRangeObject.Min
-				AMinIsLesser := rangeObject.Min <= newRangeObject.Min
+				//aMinIsGreater := rangeObject.Min >= newRangeObject.Min
+				//AMinIsLesser := rangeObject.Min <= newRangeObject.Min
 				AMaxIsLesser := rangeObject.Max <= newRangeObject.Max
-				if aMinIsGreater && AMinIsLesser {
-					
-				}
+				bMaxIsGreater := newRangeObject.Max >= rangeObject.Max
+				//bMinIsGreater := newRangeObject.Min >= rangeObject.Min
+				//bMinIsLesser := newRangeObject.Min <= rangeObject.Min
+				bMaxIsLesser := newRangeObject.Max <= rangeObject.Max
+
 				if aMaxIsGreater {
-					if rangeObject.Min >= newRangeObject.Max {
+					if rangeObject.Min > newRangeObject.Max {
 						continue
 					}
 					newExpandedRange := RangeObject{int(math.Min(float64(rangeObject.Min), float64(newRangeObject.Min))), int(math.Max(float64(rangeObject.Max), float64(newRangeObject.Max)))}
 					newRangeObjects[newRangeIndex] = newExpandedRange
+					isAdded = true
+				} else if AMaxIsLesser {
+					if rangeObject.Max < newRangeObject.Min {
+						continue
+					}
+					newExpandedRange := RangeObject{int(math.Min(float64(rangeObject.Min), float64(newRangeObject.Min))), int(math.Max(float64(rangeObject.Max), float64(newRangeObject.Max)))}
+					newRangeObjects[newRangeIndex] = newExpandedRange
+					isAdded = true
 				}
+				if bMaxIsGreater {
+					if newRangeObject.Min > rangeObject.Max {
+						continue
+					}
+					newExpandedRange := RangeObject{int(math.Min(float64(rangeObject.Min), float64(newRangeObject.Min))), int(math.Max(float64(rangeObject.Max), float64(newRangeObject.Max)))}
+					newRangeObjects[newRangeIndex] = newExpandedRange
+					isAdded = true
+				} else if bMaxIsLesser {
+					if newRangeObject.Max > rangeObject.Min {
+						continue
+					}
+					newExpandedRange := RangeObject{int(math.Min(float64(rangeObject.Min), float64(newRangeObject.Min))), int(math.Max(float64(rangeObject.Max), float64(newRangeObject.Max)))}
+					newRangeObjects[newRangeIndex] = newExpandedRange
+					isAdded = true
 
+				}
 			}
 			if !isAdded {
 				newRangeObjects = append(newRangeObjects, rangeObject)
 			}
+			currentRanges = newRangeObjects
 		}
-		currentRanges = newRangeObjects
 	}
 
 	return currentRanges

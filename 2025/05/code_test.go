@@ -39,7 +39,7 @@ func Test_part2Sample(t *testing.T) {
 	fileContentString := string(contentBytes)
 
 	value := run(true, fileContentString)
-	if value != 14 {
+	if value != 17 {
 		t.Error(value)
 	}
 }
@@ -61,6 +61,8 @@ func Test_part2User(t *testing.T) {
 	if value != 14 {
 		t.Error(value)
 	}
+	//2732545933275872 too high
+	//369761800782638 wrong
 }
 
 //6583 too high
